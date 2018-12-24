@@ -67,5 +67,10 @@
   "bugs": {
     "url": "https://github.com/lucasconstantino/now-we-test/issues"
   },
-  "homepage": "https://github.com/lucasconstantino/now-we-test#readme"
+  "homepage": "https://github.com/lucasconstantino/now-we-test#readme",
+  "dependencies": {
+    "invariant": "^2.2.4",
+    "micro": "^9.3.3",
+    "supertest": "^3.3.0"
+  }
 }
