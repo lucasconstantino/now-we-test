@@ -1,0 +1,53 @@
+{
+  "name": "now-we-test",
+  "version": "0.1.0",
+  "description": "Test your Now deployed Node.js lambdas locally",
+  "author": "Lucas Constantino Silva <lucasconstantinosilva@gmail.com>",
+  "license": "MIT",
+  "main": "./lib/index.js",
+  "module": "./lib/index.js",
+  "jsnext:main": "./lib/index.js",
+  "scripts": {
+    "compile": "babel src -d lib",
+    "lint": "eslint index.js src",
+    "test": "jest",
+    "test:watch": "yarn test --watch --collectCoverage=no",
+    "codecov": "yarn test && codecov",
+    "prepublish": "npm test && npm run lint && npm run compile"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-rewire": "^1.2.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "codecov": "^3.0.2",
+    "eslint": "^4.19.1",
+    "eslint-config-taller": "^2.0.0",
+    "jest": "^23.1.0"
+  },
+  "keywords": [
+    "now",
+    "lambda",
+    "test",
+    "local",
+    "serve"
+  ],
+  "jest": {
+    "testEnvironment": "node",
+    "collectCoverage": true,
+    "collectCoverageFrom": [
+      "src/**/*.js"
+    ],
+    "moduleNameMapper": {
+      "^now-we-test(.*)$": "<rootDir>/src$1"
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucasconstantino/now-we-test.git"
+  },
+  "bugs": {
+    "url": "https://github.com/lucasconstantino/now-we-test/issues"
+  },
+  "homepage": "https://github.com/lucasconstantino/now-we-test#readme"
+}
