@@ -17,4 +17,23 @@ Help unit test and locally serve lambdas written to deploy using Now.
 
 ## Usage
 
-### Configuration
+### Unit tests
+
+In your unit tests, you can use the `lambda` help to simulate a lambda execution environment without needing a running server:
+
+```js
+import { lambda } from 'now-we-test'
+import func from '../your-lambda-implementation'
+
+const app = lambda(func)
+
+describe('func', () => {
+  it('should do something', async () => {
+    const result = await app.get('/')
+
+    expect(result.text).toBe('[the value returned by the lambda]')
+  })
+})
+```
+
+> The result of the invokation of `lambda` helper is a [SuperTest](https://github.com/visionmedia/supertest) instance, so please refer to that documentation for details on possible assertions and usage.
