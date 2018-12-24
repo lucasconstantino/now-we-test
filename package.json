@@ -1,19 +1,21 @@
 {
   "name": "now-we-test",
-  "version": "0.1.0",
   "description": "Test your Now deployed Node.js lambdas locally",
+  "version": "0.1.0",
   "author": "Lucas Constantino Silva <lucasconstantinosilva@gmail.com>",
-  "license": "MIT",
-  "main": "./lib/index.js",
-  "module": "./lib/index.js",
-  "jsnext:main": "./lib/index.js",
-  "scripts": {
-    "compile": "babel src -d lib",
-    "lint": "eslint index.js src",
-    "test": "jest",
-    "test:watch": "yarn test --watch --collectCoverage=no",
-    "codecov": "yarn test && codecov",
-    "prepublish": "npm test && npm run lint && npm run compile"
+  "bin": {
+    "now-we-test": "./bin/run"
+  },
+  "bugs": {
+    "url": "https://github.com/lucasconstantino/now-we-test/issues"
+  },
+  "dependencies": {
+    "invariant": "^2.2.4",
+    "micro": "^9.3.3",
+    "supertest": "^3.3.0",
+    "@oclif/command": "^1",
+    "@oclif/config": "^1",
+    "@oclif/plugin-help": "^2"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0",
@@ -41,15 +43,24 @@
     "codecov": "^3.0.2",
     "eslint": "^4.19.1",
     "eslint-config-taller": "^2.0.0",
-    "jest": "^23.1.0"
+    "jest": "^23.1.0",
+    "@oclif/dev-cli": "^1",
+    "globby": "^8"
   },
-  "keywords": [
-    "now",
-    "lambda",
-    "test",
-    "local",
-    "serve"
+  "oclif": {
+    "commands": "./src/commands",
+    "bin": "now-we-test",
+    "plugins": [
+      "@oclif/plugin-help"
+    ]
+  },
+  "files": [
+    "/bin",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json",
+    "/lib"
   ],
+  "homepage": "https://github.com/lucasconstantino/now-we-test#readme",
   "jest": {
     "testEnvironment": "node",
     "collectCoverage": true,
@@ -60,17 +71,29 @@
       "^now-we-test(.*)$": "<rootDir>/src$1"
     }
   },
+  "jsnext:main": "./lib/index.js",
+  "keywords": [
+    "lambda",
+    "local",
+    "now",
+    "serve",
+    "test",
+    "oclif"
+  ],
+  "license": "MIT",
+  "main": "./lib/index.js",
+  "module": "./lib/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/lucasconstantino/now-we-test.git"
   },
-  "bugs": {
-    "url": "https://github.com/lucasconstantino/now-we-test/issues"
-  },
-  "homepage": "https://github.com/lucasconstantino/now-we-test#readme",
-  "dependencies": {
-    "invariant": "^2.2.4",
-    "micro": "^9.3.3",
-    "supertest": "^3.3.0"
+  "scripts": {
+    "postpack": "rm -f oclif.manifest.json",
+    "prepack": "oclif-dev manifest && oclif-dev readme",
+    "codecov": "yarn test && codecov",
+    "compile": "rm -Rf lib && babel src -d lib",
+    "lint": "eslint index.js src",
+    "prepublish": "npm test && npm run lint && npm run compile",
+    "test": "jest"
   }
 }
