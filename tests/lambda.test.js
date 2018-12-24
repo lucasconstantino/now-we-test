@@ -1,6 +1,14 @@
 import { lambda } from 'now-we-test'
 
 describe('lambda', () => {
+  const lambdas = {
+    simple: jest.fn(() => 'Hello world!'),
+    async: jest.fn(async () => 'Hello world!'),
+    responding: jest.fn((req, res) => res.end('Hello world!')),
+  }
+
+  beforeEach(() => jest.clearAllMocks())
+
   describe('constructor', () => {
     it('should be a function', () => {
       expect(lambda).toBeInstanceOf(Function)
@@ -22,16 +30,36 @@ describe('lambda', () => {
     })
   })
 
-  describe('invoke', () => {
+  describe('simple', () => {
     it('should run a simple value returning lambda', async () => {
-      const func = jest.fn(() => 'result')
-      const app = lambda(func)
-
+      const app = lambda(lambdas.simple)
       const result = await app.get('/')
 
-      expect(func).toHaveBeenCalledTimes(1)
+      expect(lambdas.simple).toHaveBeenCalledTimes(1)
       expect(result).toHaveProperty('status', 200)
-      expect(result).toHaveProperty('text', 'result')
+      expect(result).toHaveProperty('text', 'Hello world!')
+    })
+  })
+
+  describe('async', () => {
+    it('should run an async value returning lambda', async () => {
+      const app = lambda(lambdas.async)
+      const result = await app.get('/')
+
+      expect(lambdas.async).toHaveBeenCalledTimes(1)
+      expect(result).toHaveProperty('status', 200)
+      expect(result).toHaveProperty('text', 'Hello world!')
+    })
+  })
+
+  describe('responding', () => {
+    it('should run an response dispatching lambda', async () => {
+      const app = lambda(lambdas.async)
+      const result = await app.get('/')
+
+      expect(lambdas.async).toHaveBeenCalledTimes(1)
+      expect(result).toHaveProperty('status', 200)
+      expect(result).toHaveProperty('text', 'Hello world!')
     })
   })
 })
