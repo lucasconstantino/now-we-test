@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "lambdas/*.js",
+      "use": "@now/node"
+    },
+    {
+      "src": "lambda.js",
+      "use": "@now/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(?<id>.*)",
+      "dest": "/lambdas/$+{id}"
+    }
+  ]
+}
