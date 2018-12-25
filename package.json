@@ -24,29 +24,7 @@
     "supertest": "^3.3.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.0.0",
-    "@babel/core": "^7.0.0",
-    "@babel/plugin-proposal-class-properties": "^7.0.0",
-    "@babel/plugin-proposal-decorators": "^7.0.0",
-    "@babel/plugin-proposal-do-expressions": "^7.0.0",
-    "@babel/plugin-proposal-export-default-from": "^7.0.0",
-    "@babel/plugin-proposal-export-namespace-from": "^7.0.0",
-    "@babel/plugin-proposal-function-bind": "^7.0.0",
-    "@babel/plugin-proposal-function-sent": "^7.0.0",
-    "@babel/plugin-proposal-json-strings": "^7.0.0",
-    "@babel/plugin-proposal-logical-assignment-operators": "^7.0.0",
-    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.0.0",
-    "@babel/plugin-proposal-numeric-separator": "^7.0.0",
-    "@babel/plugin-proposal-optional-chaining": "^7.0.0",
-    "@babel/plugin-proposal-pipeline-operator": "^7.0.0",
-    "@babel/plugin-proposal-throw-expressions": "^7.0.0",
-    "@babel/plugin-syntax-dynamic-import": "^7.0.0",
-    "@babel/plugin-syntax-import-meta": "^7.0.0",
-    "@babel/preset-env": "^7.0.0",
     "@oclif/dev-cli": "^1",
-    "babel-core": "7.0.0-bridge.0",
-    "babel-jest": "^23.4.2",
-    "babel-plugin-rewire": "^1.2.0",
     "codecov": "^3.0.2",
     "eslint": "^4.19.1",
     "eslint-config-taller": "^2.0.0",
@@ -54,7 +32,7 @@
     "jest": "^23.1.0"
   },
   "oclif": {
-    "commands": "./src/commands",
+    "commands": "./lib/commands",
     "bin": "now-we-test",
     "plugins": [
       "@oclif/plugin-help"
@@ -71,10 +49,10 @@
     "testEnvironment": "node",
     "collectCoverage": true,
     "collectCoverageFrom": [
-      "src/**/*.js"
+      "lib/**/*.js"
     ],
     "moduleNameMapper": {
-      "^now-we-test(.*)$": "<rootDir>/src$1"
+      "^now-we-test(.*)$": "<rootDir>/lib$1"
     }
   },
   "jsnext:main": "./lib/index.js",
@@ -97,9 +75,8 @@
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "oclif-dev manifest && oclif-dev readme",
     "codecov": "yarn test && codecov",
-    "compile": "rm -Rf lib && babel src -d lib",
-    "lint": "eslint index.js src",
-    "prepublish": "npm test && npm run lint && npm run compile",
+    "lint": "eslint index.js lib",
+    "prepublish": "npm test && npm run lint",
     "test": "jest"
   }
 }
