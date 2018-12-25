@@ -1,4 +1,4 @@
-import { lambda } from 'now-we-test'
+const { lambda } = require('now-we-test')
 
 describe('lambda', () => {
   const lambdas = {
