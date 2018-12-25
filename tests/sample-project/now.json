@@ -13,7 +13,7 @@
   "routes": [
     {
       "src": "/(?<id>.*)",
-      "dest": "/lambdas/$+{id}"
+      "dest": "/lambdas/$id"
     }
   ]
 }
