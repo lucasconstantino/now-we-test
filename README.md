@@ -82,4 +82,21 @@ OPTIONS
   --all  see all commands in CLI
 ```
 
+
+##### `now-we-test-ts [COMMAND]`
+
+For Typescript users, you can test your lamdas locally with this command.\
+Keep in mind that you will need `ts-node` and `typescript` to be installed in your project for this
+to work properly.\
+You will also need to specify the `.ts` extension when requesting Typescript lambdas, either manually
+or by using now.json routes.
+i.e.
+
+```json
+  {
+    "src": "/api/(.*)",
+    "dest": "/api/$1.ts"
+  },
+```
+
 _See code: [@oclif/plugin-help](https://github.com/oclif/plugin-help/blob/v2.1.4/src/commands/help.ts)_

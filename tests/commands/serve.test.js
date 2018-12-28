@@ -9,6 +9,7 @@ const lambdas = {
   simple: require('../sample-project/lambdas/simple'),
   async: require('../sample-project/lambdas/async'),
   responding: require('../sample-project/lambdas/responding'),
+  typescript: require('../sample-project/lambdas/typescript.ts').default,
 }
 
 const basePath = path.resolve(__dirname, '../sample-project')
@@ -94,6 +95,16 @@ describe('commands', () => {
         .expect(200, 'result')
 
       expect(lambdas.unrouted).toHaveBeenCalledTimes(1)
+    })
+
+    it('should run typescript lambdas', async () => {
+      app = await ServeCommand.run([basePath])
+
+      await supertest(app)
+        .get('/typescript.ts')
+        .expect(200, 'can run typescript lambdas')
+
+      expect(lambdas.typescript).toHaveBeenCalledTimes(1)
     })
   })
 })

@@ -6,6 +6,10 @@
       "use": "@now/node"
     },
     {
+      "src": "lambdas/*.ts",
+      "use": "@now/node@canary"
+    },
+    {
       "src": "lambda.js",
       "use": "@now/node"
     }

@@ -4,7 +4,8 @@
   "version": "0.3.0",
   "author": "Lucas Constantino Silva <lucasconstantinosilva@gmail.com>",
   "bin": {
-    "now-we-test": "./bin/run"
+    "now-we-test": "./bin/run",
+    "now-we-test-ts": "./bin/run-ts"
   },
   "bugs": {
     "url": "https://github.com/lucasconstantino/now-we-test/issues"
@@ -25,11 +26,18 @@
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1",
+    "@types/jest": "^23.3.10",
     "codecov": "^3.0.2",
     "eslint": "^4.19.1",
     "eslint-config-taller": "^2.0.0",
     "globby": "^8",
-    "jest": "^23.1.0"
+    "jest": "^23.1.0",
+    "ts-jest": "^23.10.5",
+    "typescript": "^3.2.2"
+  },
+  "peerDependencies": {
+    "ts-node": "^7.0.1",
+    "typescript": "^3.2.2"
   },
   "oclif": {
     "commands": "./lib/commands",
@@ -51,6 +59,9 @@
     "collectCoverageFrom": [
       "lib/**/*.js"
     ],
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest"
+    },
     "moduleNameMapper": {
       "^now-we-test(.*)$": "<rootDir>/lib$1"
     }
