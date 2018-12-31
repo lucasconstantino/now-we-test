@@ -72,7 +72,7 @@ describe('commands', () => {
       app = await ServeCommand.run([basePath])
 
       await supertest(app)
-        .get('/simple')
+        .get('/custom/path/simple')
         .expect(200, 'simple value')
 
       expect(lambdas.simple).toHaveBeenCalledTimes(1)
@@ -82,7 +82,7 @@ describe('commands', () => {
       app = await ServeCommand.run([basePath])
 
       await supertest(app)
-        .get('/async')
+        .get('/custom/path/async')
         .expect(200, 'async value')
 
       expect(lambdas.async).toHaveBeenCalledTimes(1)
@@ -92,13 +92,13 @@ describe('commands', () => {
       app = await ServeCommand.run([basePath])
 
       await supertest(app)
-        .get('/responding')
+        .get('/custom/path/responding')
         .expect(200, 'responding value')
 
       expect(lambdas.responding).toHaveBeenCalledTimes(1)
     })
 
-    it('should run on unrouted lambdas', async () => {
+    it('should run on unrouted (direct path) lambdas', async () => {
       app = await ServeCommand.run([basePath])
 
       await supertest(app)
@@ -106,6 +106,24 @@ describe('commands', () => {
         .expect(200, 'result')
 
       expect(lambdas.unrouted).toHaveBeenCalledTimes(1)
+    })
+
+    it('should respect provided methods', async () => {
+      app = await ServeCommand.run([basePath])
+
+      await supertest(app)
+        .get('/custom-path')
+        .expect(200, 'simple value')
+
+      expect(lambdas.simple).toHaveBeenCalledTimes(1)
+
+      console.error.suppress(/No lambda matching requested path/)
+
+      await supertest(app)
+        .post('/custom-path')
+        .expect(404, 'No lambda matching requested path')
+
+      expect(lambdas.simple).toHaveBeenCalledTimes(1)
     })
   })
 })

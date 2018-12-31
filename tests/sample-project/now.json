@@ -16,8 +16,13 @@
       "dest": "/lambdas/index.js"
     },
     {
-      "src": "/(?<id>.*)",
+      "src": "/custom/path/(?<id>.*)",
       "dest": "/lambdas/$id"
+    },
+    {
+      "src": "/custom-path",
+      "methods": ["GET"],
+      "dest": "/lambdas/simple.js"
     }
   ]
 }
