@@ -30,7 +30,8 @@
     "eslint": "^4.19.1",
     "eslint-config-taller": "^2.0.0",
     "globby": "^8",
-    "jest": "^23.1.0"
+    "jest": "^23.1.0",
+    "standard-version": "^4.4.0"
   },
   "oclif": {
     "commands": "./lib/commands",
@@ -78,6 +79,7 @@
     "codecov": "yarn test && codecov",
     "lint": "eslint lib",
     "prepublish": "npm test && npm run lint",
-    "test": "jest"
+    "test": "jest",
+    "release": "standard-version"
   }
 }
