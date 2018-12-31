@@ -12,6 +12,10 @@
   ],
   "routes": [
     {
+      "src": "/",
+      "dest": "/lambdas/index.js"
+    },
+    {
       "src": "/(?<id>.*)",
       "dest": "/lambdas/$id"
     }

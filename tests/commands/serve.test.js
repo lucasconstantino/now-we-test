@@ -52,7 +52,7 @@ describe('commands', () => {
       app = await ServeCommand.run([basePath])
 
       await supertest(app)
-        .get('/')
+        .get('/non/existing/path')
         .expect(404, 'No lambda matching requested path')
     })
 
