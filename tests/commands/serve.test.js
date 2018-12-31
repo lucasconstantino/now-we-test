@@ -2,30 +2,40 @@
 const net = require('net')
 const path = require('path')
 const supertest = require('supertest')
+const console = require('console-suppress').default
 const ServeCommand = require('now-we-test/commands/serve')
 
 const lambdas = {
   unrouted: require('../sample-project/lambda.js'),
   simple: require('../sample-project/lambdas/simple'),
   async: require('../sample-project/lambdas/async'),
-  responding: require('../sample-project/lambdas/responding'),
+  responding: require('../sample-project/lambdas/responding')
 }
 
 const basePath = path.resolve(__dirname, '../sample-project')
 
-const isPortAvailable = port => new Promise((resolve, reject) => {
-  const tester = net
-    .createServer()
-    .once('error', err => (err.code === 'EADDRINUSE' ? resolve(false) : reject(err)))
-    .once('listening', () => tester.once('close', () => resolve(true)).close())
-    .listen(port)
-})
+const isPortAvailable = port =>
+  new Promise((resolve, reject) => {
+    const tester = net
+      .createServer()
+      .once('error', err =>
+        err.code === 'EADDRINUSE' ? resolve(false) : reject(err)
+      )
+      .once('listening', () =>
+        tester.once('close', () => resolve(true)).close()
+      )
+      .listen(port)
+  })
 
 describe('commands', () => {
   describe('serve', () => {
     let app
 
-    beforeEach(() => jest.clearAllMocks())
+    beforeEach(() => {
+      jest.clearAllMocks()
+      console.cleanSuppressors()
+    })
+
     afterEach(done => (app ? app.close(done) : done()))
 
     it('should have a run method', () => {
@@ -49,6 +59,8 @@ describe('commands', () => {
     })
 
     it('should return 404 when no lambda found on the requested URL', async () => {
+      console.error.suppress(/No lambda matching requested path/)
+
       app = await ServeCommand.run([basePath])
 
       await supertest(app)

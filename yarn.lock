@@ -953,6 +953,11 @@ console-control-strings@^1.0.0, console-control-strings@~1.1.0:
   resolved "https://registry.yarnpkg.com/console-control-strings/-/console-control-strings-1.1.0.tgz#3d7cf4464db6446ea644bf4b39507f9851008e8e"
   integrity sha1-PXz0Rk22RG6mRL9LOVB/mFEAjo4=
 
+console-suppress@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/console-suppress/-/console-suppress-0.1.1.tgz#3efe1e4ca0ce137b564dafd1c95711acc46d8041"
+  integrity sha512-xqFyMoGacVho4j1Jy8Ug3bZbsf+z/1zU2t91jsn3wKKTvGHEM2yvzICjOiXkcV2jNR0jKihcwXOZjcZwkk3R+g==
+
 contains-path@^0.1.0:
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/contains-path/-/contains-path-0.1.0.tgz#fe8cf184ff6670b6baef01a9d4861a5cbec4120a"
