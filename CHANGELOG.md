@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.6.0"></a>
+# [0.6.0](https://github.com/lucasconstantino/now-we-test/compare/v0.5.0...v0.6.0) (2019-01-05)
+
+
+### Features
+
+* added CORS support to serve command ([2aa6dcc](https://github.com/lucasconstantino/now-we-test/commit/2aa6dcc))
+
+
+
 <a name="0.5.0"></a>
 # [0.5.0](https://github.com/lucasconstantino/now-we-test/compare/v0.4.0...v0.5.0) (2019-01-05)
 
