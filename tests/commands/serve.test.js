@@ -22,9 +22,11 @@ describe('commands', () => {
   beforeEach(() => console.cleanSuppressors())
 
   describe('serve', () => {
-    describe('@now/node', () => {
-      let app
+    let app
 
+    afterEach(done => (app ? app.close(done) : done()))
+
+    describe('@now/node', () => {
       const basePath = path.resolve(__dirname, '../fixtures/now-node-project')
 
       const lambdas = {
@@ -40,8 +42,6 @@ describe('commands', () => {
           lambdas[name].mockClear()
         })
       })
-
-      afterEach(done => (app ? app.close(done) : done()))
 
       describe('general serve tests', () => {
         it('should have a run method', () => {
@@ -159,8 +159,6 @@ describe('commands', () => {
     })
 
     describe('now-micro', () => {
-      let app
-
       const basePath = path.resolve(__dirname, '../fixtures/now-micro-project')
 
       const lambdas = {
@@ -176,8 +174,6 @@ describe('commands', () => {
           lambdas[name].mockClear()
         })
       })
-
-      afterEach(done => (app ? app.close(done) : done()))
 
       describe('returning', () => {
         it('should run a value returning lambda', async () => {
