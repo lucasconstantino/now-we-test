@@ -13,16 +13,12 @@
   "routes": [
     {
       "src": "/",
-      "dest": "/lambdas/index.js"
+      "methods": ["GET"],
+      "dest": "/lambdas/returning.js"
     },
     {
       "src": "/custom/path/(?<id>.*)",
       "dest": "/lambdas/$id"
-    },
-    {
-      "src": "/custom-path",
-      "methods": ["GET"],
-      "dest": "/lambdas/simple.js"
     }
   ]
 }
