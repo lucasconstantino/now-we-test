@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file. See [standa
 # [0.5.0](https://github.com/lucasconstantino/now-we-test/compare/v0.4.0...v0.5.0) (2019-01-05)
 
 
+`serve` command now behaves more similarly to the Now 2.0 @now/node environment, but provides full Micro environment using the [now-micro builder](https://github.com/lucasconstantino/now-micro).
+
 ### Bug Fixes
 
 * lint warnings ([9feef0d](https://github.com/lucasconstantino/now-we-test/commit/9feef0d))
@@ -17,6 +19,10 @@ All notable changes to this project will be documented in this file. See [standa
 * augmented cache cleanup to basically include everything (total refresh) ([923976d](https://github.com/lucasconstantino/now-we-test/commit/923976d))
 * simulated [@now](https://github.com/now)/node thrown error handling ([f24cbb6](https://github.com/lucasconstantino/now-we-test/commit/f24cbb6))
 * updated serve command to use simulators ([2a1dbbc](https://github.com/lucasconstantino/now-we-test/commit/2a1dbbc))
+
+### Deprecated
+
+* lambda function is deprecated and will be removed soon
 
 
 
