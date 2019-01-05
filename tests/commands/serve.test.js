@@ -31,7 +31,8 @@ describe('commands', () => {
         unrouted: require('../fixtures/now-node-project/lambda.js'),
         returning: require('../fixtures/now-node-project/lambdas/returning'),
         asyncReturning: require('../fixtures/now-node-project/lambdas/asyncReturning'),
-        responding: require('../fixtures/now-node-project/lambdas/responding')
+        responding: require('../fixtures/now-node-project/lambdas/responding'),
+        throwing: require('../fixtures/now-node-project/lambdas/throwing')
       }
 
       beforeEach(() => {
@@ -72,38 +73,56 @@ describe('commands', () => {
           .expect(404, 'No lambda matching requested path')
       })
 
-      it('should timeout on a value returning lambda', async () => {
-        app = await ServeCommand.run([basePath])
+      describe('returning', () => {
+        it('should timeout on a value returning lambda', async () => {
+          app = await ServeCommand.run([basePath])
 
-        await expect(
-          supertest(app)
-            .get('/custom/path/returning')
-            .timeout(100)
-        ).rejects.toThrow(/Timeout of 100ms exceeded/)
+          await expect(
+            supertest(app)
+              .get('/custom/path/returning')
+              .timeout(100)
+          ).rejects.toThrow(/Timeout of 100ms exceeded/)
 
-        expect(lambdas.returning).toHaveBeenCalledTimes(1)
+          expect(lambdas.returning).toHaveBeenCalledTimes(1)
+        })
       })
 
-      it('should timeout on an async value returning lambda', async () => {
-        app = await ServeCommand.run([basePath])
+      describe('async', () => {
+        it('should timeout on an async value returning lambda', async () => {
+          app = await ServeCommand.run([basePath])
 
-        await expect(
-          supertest(app)
-            .get('/custom/path/asyncReturning')
-            .timeout(100)
-        ).rejects.toThrow(/Timeout of 100ms exceeded/)
+          await expect(
+            supertest(app)
+              .get('/custom/path/asyncReturning')
+              .timeout(100)
+          ).rejects.toThrow(/Timeout of 100ms exceeded/)
 
-        expect(lambdas.asyncReturning).toHaveBeenCalledTimes(1)
+          expect(lambdas.asyncReturning).toHaveBeenCalledTimes(1)
+        })
       })
 
-      it('should run an response dispatching lambda', async () => {
-        app = await ServeCommand.run([basePath])
+      describe('responding', () => {
+        it('should run an response dispatching lambda', async () => {
+          app = await ServeCommand.run([basePath])
 
-        await supertest(app)
-          .get('/custom/path/responding')
-          .expect(200, 'Hello world!')
+          await supertest(app)
+            .get('/custom/path/responding')
+            .expect(200, 'Hello world!')
 
-        expect(lambdas.responding).toHaveBeenCalledTimes(1)
+          expect(lambdas.responding).toHaveBeenCalledTimes(1)
+        })
+      })
+
+      describe('throwing', () => {
+        it('should run a throwing lambda', async () => {
+          app = await ServeCommand.run([basePath])
+
+          await supertest(app)
+            .get('/custom/path/throwing')
+            .expect(502, /NO_STATUS_CODE_FROM_LAMBDA/)
+
+          expect(lambdas.throwing).toHaveBeenCalledTimes(1)
+        })
       })
 
       it('should run on unrouted (direct path) lambdas', async () => {
