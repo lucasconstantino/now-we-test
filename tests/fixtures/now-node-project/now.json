@@ -14,7 +14,7 @@
     {
       "src": "/method-path",
       "methods": ["GET"],
-      "dest": "/lambdas/returning.js"
+      "dest": "/lambda.js"
     },
     {
       "src": "/custom/path/(?<id>.*)",

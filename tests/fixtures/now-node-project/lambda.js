@@ -1,3 +1,5 @@
 const jestMock = require('jest-mock')
 
-module.exports = jestMock.fn(() => 'Hello world!')
+module.exports = jestMock.fn((req, res) => {
+  res.end('Hello world!')
+})
