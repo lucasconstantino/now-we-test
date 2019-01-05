@@ -6,13 +6,13 @@ const console = require('console-suppress').default
 const ServeCommand = require('now-we-test/commands/serve')
 
 const lambdas = {
-  unrouted: require('../sample-project/lambda.js'),
-  simple: require('../sample-project/lambdas/simple'),
-  async: require('../sample-project/lambdas/async'),
-  responding: require('../sample-project/lambdas/responding')
+  unrouted: require('../fixtures/now-node-project/lambda.js'),
+  returning: require('../fixtures/now-node-project/lambdas/returning'),
+  asyncReturning: require('../fixtures/now-node-project/lambdas/asyncReturning'),
+  responding: require('../fixtures/now-node-project/lambdas/responding')
 }
 
-const basePath = path.resolve(__dirname, '../sample-project')
+const basePath = path.resolve(__dirname, '../fixtures/now-node-project')
 
 const isPortAvailable = port =>
   new Promise((resolve, reject) => {
@@ -32,7 +32,10 @@ describe('commands', () => {
     let app
 
     beforeEach(() => {
-      jest.clearAllMocks()
+      Object.keys(lambdas).forEach(name => {
+        lambdas[name].mockClear()
+      })
+
       console.cleanSuppressors()
     })
 
@@ -68,24 +71,24 @@ describe('commands', () => {
         .expect(404, 'No lambda matching requested path')
     })
 
-    it('should run a simple value returning lambda', async () => {
+    it('should run a value returning lambda', async () => {
       app = await ServeCommand.run([basePath])
 
       await supertest(app)
-        .get('/custom/path/simple')
-        .expect(200, 'simple value')
+        .get('/custom/path/returning')
+        .expect(200, 'Hello world!')
 
-      expect(lambdas.simple).toHaveBeenCalledTimes(1)
+      expect(lambdas.returning).toHaveBeenCalledTimes(1)
     })
 
     it('should run an async value returning lambda', async () => {
       app = await ServeCommand.run([basePath])
 
       await supertest(app)
-        .get('/custom/path/async')
-        .expect(200, 'async value')
+        .get('/custom/path/asyncReturning')
+        .expect(200, 'Hello world!')
 
-      expect(lambdas.async).toHaveBeenCalledTimes(1)
+      expect(lambdas.asyncReturning).toHaveBeenCalledTimes(1)
     })
 
     it('should run an response dispatching lambda', async () => {
@@ -93,7 +96,7 @@ describe('commands', () => {
 
       await supertest(app)
         .get('/custom/path/responding')
-        .expect(200, 'responding value')
+        .expect(200, 'Hello world!')
 
       expect(lambdas.responding).toHaveBeenCalledTimes(1)
     })
@@ -103,7 +106,7 @@ describe('commands', () => {
 
       await supertest(app)
         .get('/lambda')
-        .expect(200, 'result')
+        .expect(200, 'Hello world!')
 
       expect(lambdas.unrouted).toHaveBeenCalledTimes(1)
     })
@@ -112,18 +115,18 @@ describe('commands', () => {
       app = await ServeCommand.run([basePath])
 
       await supertest(app)
-        .get('/custom-path')
-        .expect(200, 'simple value')
+        .get('/method-path')
+        .expect(200, 'Hello world!')
 
-      expect(lambdas.simple).toHaveBeenCalledTimes(1)
+      expect(lambdas.returning).toHaveBeenCalledTimes(1)
 
       console.error.suppress(/No lambda matching requested path/)
 
       await supertest(app)
-        .post('/custom-path')
+        .post('/method-path')
         .expect(404, 'No lambda matching requested path')
 
-      expect(lambdas.simple).toHaveBeenCalledTimes(1)
+      expect(lambdas.returning).toHaveBeenCalledTimes(1)
     })
   })
 })
