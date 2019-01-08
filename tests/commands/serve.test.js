@@ -2,109 +2,279 @@
 const net = require('net')
 const path = require('path')
 const supertest = require('supertest')
+const console = require('console-suppress').default
 const ServeCommand = require('now-we-test/commands/serve')
 
-const lambdas = {
-  unrouted: require('../sample-project/lambda.js'),
-  simple: require('../sample-project/lambdas/simple'),
-  async: require('../sample-project/lambdas/async'),
-  responding: require('../sample-project/lambdas/responding'),
-  typescript: require('../sample-project/lambdas/typescript.ts').default,
-}
-
-const basePath = path.resolve(__dirname, '../sample-project')
-
-const isPortAvailable = port => new Promise((resolve, reject) => {
-  const tester = net
-    .createServer()
-    .once('error', err => (err.code === 'EADDRINUSE' ? resolve(false) : reject(err)))
-    .once('listening', () => tester.once('close', () => resolve(true)).close())
-    .listen(port)
-})
+const isPortAvailable = port =>
+  new Promise((resolve, reject) => {
+    const tester = net
+      .createServer()
+      .once('error', err =>
+        err.code === 'EADDRINUSE' ? resolve(false) : reject(err)
+      )
+      .once('listening', () =>
+        tester.once('close', () => resolve(true)).close()
+      )
+      .listen(port)
+  })
 
 describe('commands', () => {
+  beforeEach(() => console.cleanSuppressors())
+
   describe('serve', () => {
     let app
 
-    beforeEach(() => jest.clearAllMocks())
-    afterEach(done => (app ? app.close(done) : done()))
+    afterEach(done => (app && app.listening ? app.close(done) : done()))
 
-    it('should have a run method', () => {
-      expect(ServeCommand.run).toBeInstanceOf(Function)
+    describe('@now/static', () => {
+      const basePath = path.resolve(__dirname, '../fixtures/now-static-project')
+
+      it('should return static file content', async () => {
+        app = await ServeCommand.run([basePath])
+
+        await supertest(app)
+          .get('/README.md')
+          .expect(200, '> This is a sample static file for testing purposes.\n')
+      })
     })
 
-    it('should throw when no now.json is found', async () => {
-      await expect(ServeCommand.run([])).rejects.toThrow(/No now\.json found/)
+    describe('@now/node', () => {
+      const basePath = path.resolve(__dirname, '../fixtures/now-node-project')
+
+      const lambdas = {
+        unrouted: require('../fixtures/now-node-project/lambda.js'),
+        returning: require('../fixtures/now-node-project/lambdas/returning'),
+        asyncReturning: require('../fixtures/now-node-project/lambdas/asyncReturning'),
+        responding: require('../fixtures/now-node-project/lambdas/responding'),
+        throwing: require('../fixtures/now-node-project/lambdas/throwing'),
+        typescript: require('../fixtures/now-node-project/lambdas/typescript.ts').default,
+      }
+
+      beforeEach(() => {
+        Object.keys(lambdas).forEach(name => {
+          lambdas[name].mockClear()
+        })
+      })
+
+      describe('general serve tests', () => {
+        it('should have a run method', () => {
+          expect(ServeCommand.run).toBeInstanceOf(Function)
+        })
+
+        it('should throw when no now.json is found', async () => {
+          await expect(ServeCommand.run([])).rejects.toThrow(
+            /No now\.json found/
+          )
+        })
+
+        it('should start serving when working now.json found', async () => {
+          app = await ServeCommand.run([basePath])
+
+          expect(app.listening).toBe(true)
+        })
+
+        it('should listen on specific port when configured', async () => {
+          await expect(isPortAvailable(3001)).resolves.toBe(true)
+          app = await ServeCommand.run([basePath, '--port=3001'])
+          await expect(isPortAvailable(3001)).resolves.toBe(false)
+        })
+      })
+
+      it('should return 404 when no lambda found on the requested URL', async () => {
+        console.error.suppress(/No input matching requested path/)
+
+        app = await ServeCommand.run([basePath])
+
+        await supertest(app)
+          .get('/non/existing/path')
+          .expect(404, 'No input matching requested path')
+      })
+
+      describe('returning', () => {
+        it('should timeout on a value returning lambda', async () => {
+          app = await ServeCommand.run([basePath])
+
+          await expect(
+            supertest(app)
+              .get('/custom/path/returning.js')
+              .timeout(100)
+          ).rejects.toThrow(/Timeout of 100ms exceeded/)
+
+          expect(lambdas.returning).toHaveBeenCalledTimes(1)
+        })
+      })
+
+      describe('async', () => {
+        it('should timeout on an async value returning lambda', async () => {
+          app = await ServeCommand.run([basePath])
+
+          await expect(
+            supertest(app)
+              .get('/custom/path/asyncReturning.js')
+              .timeout(100)
+          ).rejects.toThrow(/Timeout of 100ms exceeded/)
+
+          expect(lambdas.asyncReturning).toHaveBeenCalledTimes(1)
+        })
+      })
+
+      describe('responding', () => {
+        it('should run an response dispatching lambda', async () => {
+          app = await ServeCommand.run([basePath])
+
+          await supertest(app)
+            .get('/custom/path/responding.js')
+            .expect(200, 'Hello world!')
+
+          expect(lambdas.responding).toHaveBeenCalledTimes(1)
+        })
+      })
+
+      describe('throwing', () => {
+        it('should run a throwing lambda', async () => {
+          app = await ServeCommand.run([basePath])
+
+          await supertest(app)
+            .get('/custom/path/throwing.js')
+            .expect(502, /NO_STATUS_CODE_FROM_LAMBDA/)
+
+          expect(lambdas.throwing).toHaveBeenCalledTimes(1)
+        })
+      })
+
+      it('should run on unrouted (direct path) lambdas', async () => {
+        app = await ServeCommand.run([basePath])
+
+        await supertest(app)
+          .get('/lambda.js')
+          .expect(200, 'Hello world!')
+
+        expect(lambdas.unrouted).toHaveBeenCalledTimes(1)
+      })
+
+      it('should respect provided methods', async () => {
+        app = await ServeCommand.run([basePath])
+
+        await supertest(app)
+          .get('/method-path')
+          .expect(200, 'Hello world!')
+
+        expect(lambdas.unrouted).toHaveBeenCalledTimes(1)
+
+        console.error.suppress(/No input matching requested path/)
+
+        await supertest(app)
+          .post('/method-path')
+          .expect(404, 'No input matching requested path')
+
+        expect(lambdas.unrouted).toHaveBeenCalledTimes(1)
+      })
+
+      it('should run typescript lambdas', async () => {
+        app = await ServeCommand.run([basePath])
+
+        await supertest(app)
+          .get('/custom/path/typescript.ts')
+          .expect(200, 'can run typescript lambdas')
+
+        expect(lambdas.typescript).toHaveBeenCalledTimes(1)
+      })
     })
 
-    it('should start serving when working now.json found', async () => {
-      app = await ServeCommand.run([basePath])
+    describe('now-micro', () => {
+      const basePath = path.resolve(__dirname, '../fixtures/now-micro-project')
 
-      expect(app.listening).toBe(true)
-    })
+      const lambdas = {
+        unrouted: require('../fixtures/now-micro-project/lambda.js'),
+        returning: require('../fixtures/now-micro-project/lambdas/returning'),
+        asyncReturning: require('../fixtures/now-micro-project/lambdas/asyncReturning'),
+        responding: require('../fixtures/now-micro-project/lambdas/responding'),
+        throwing: require('../fixtures/now-micro-project/lambdas/throwing')
+      }
 
-    it('should listen on specific port when configured', async () => {
-      await expect(isPortAvailable(3001)).resolves.toBe(true)
-      app = await ServeCommand.run([basePath, '--port=3001'])
-      await expect(isPortAvailable(3001)).resolves.toBe(false)
-    })
+      beforeEach(() => {
+        Object.keys(lambdas).forEach(name => {
+          lambdas[name].mockClear()
+        })
+      })
 
-    it('should return 404 when no lambda found on the requested URL', async () => {
-      app = await ServeCommand.run([basePath])
+      describe('returning', () => {
+        it('should run a value returning lambda', async () => {
+          app = await ServeCommand.run([basePath])
 
-      await supertest(app)
-        .get('/')
-        .expect(404, 'No lambda matching requested path')
-    })
+          await supertest(app)
+            .get('/custom/path/returning.js')
+            .expect(200, 'Hello world!')
 
-    it('should run a simple value returning lambda', async () => {
-      app = await ServeCommand.run([basePath])
+          expect(lambdas.returning).toHaveBeenCalledTimes(1)
+        })
+      })
 
-      await supertest(app)
-        .get('/simple')
-        .expect(200, 'simple value')
+      describe('async', () => {
+        it('should run an async value returning lambda', async () => {
+          app = await ServeCommand.run([basePath])
 
-      expect(lambdas.simple).toHaveBeenCalledTimes(1)
-    })
+          await supertest(app)
+            .get('/custom/path/asyncReturning.js')
+            .expect(200, 'Hello world!')
 
-    it('should run an async value returning lambda', async () => {
-      app = await ServeCommand.run([basePath])
+          expect(lambdas.asyncReturning).toHaveBeenCalledTimes(1)
+        })
+      })
 
-      await supertest(app)
-        .get('/async')
-        .expect(200, 'async value')
+      describe('responding', () => {
+        it('should run an response dispatching lambda', async () => {
+          app = await ServeCommand.run([basePath])
 
-      expect(lambdas.async).toHaveBeenCalledTimes(1)
-    })
+          await supertest(app)
+            .get('/custom/path/responding.js')
+            .expect(200, 'Hello world!')
 
-    it('should run an response dispatching lambda', async () => {
-      app = await ServeCommand.run([basePath])
+          expect(lambdas.responding).toHaveBeenCalledTimes(1)
+        })
+      })
 
-      await supertest(app)
-        .get('/responding')
-        .expect(200, 'responding value')
+      describe('throwing', () => {
+        it('should run a throwing lambda', async () => {
+          console.error.suppress('Ooops!')
 
-      expect(lambdas.responding).toHaveBeenCalledTimes(1)
-    })
+          app = await ServeCommand.run([basePath])
 
-    it('should run on unrouted lambdas', async () => {
-      app = await ServeCommand.run([basePath])
+          await supertest(app)
+            .get('/custom/path/throwing.js')
+            .expect(500, 'Internal Server Error')
 
-      await supertest(app)
-        .get('/lambda')
-        .expect(200, 'result')
+          expect(lambdas.throwing).toHaveBeenCalledTimes(1)
+        })
+      })
 
-      expect(lambdas.unrouted).toHaveBeenCalledTimes(1)
-    })
+      it('should run on unrouted (direct path) lambdas', async () => {
+        app = await ServeCommand.run([basePath])
 
-    it('should run typescript lambdas', async () => {
-      app = await ServeCommand.run([basePath])
+        await supertest(app)
+          .get('/lambda.js')
+          .expect(200, 'Hello world!')
 
-      await supertest(app)
-        .get('/typescript.ts')
-        .expect(200, 'can run typescript lambdas')
+        expect(lambdas.unrouted).toHaveBeenCalledTimes(1)
+      })
 
-      expect(lambdas.typescript).toHaveBeenCalledTimes(1)
+      it('should respect provided methods', async () => {
+        app = await ServeCommand.run([basePath])
+
+        await supertest(app)
+          .get('/method-path')
+          .expect(200, 'Hello world!')
+
+        expect(lambdas.unrouted).toHaveBeenCalledTimes(1)
+
+        console.error.suppress(/No input matching requested path/)
+
+        await supertest(app)
+          .post('/method-path')
+          .expect(404, 'No input matching requested path')
+
+        expect(lambdas.unrouted).toHaveBeenCalledTimes(1)
+      })
     })
   })
 })

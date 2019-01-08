@@ -1,0 +1,24 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "lambdas/*.js",
+      "use": "now-micro"
+    },
+    {
+      "src": "lambda.js",
+      "use": "now-micro"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/method-path",
+      "methods": ["GET"],
+      "dest": "/lambda.js"
+    },
+    {
+      "src": "/custom/path/(?<id>.*)",
+      "dest": "/lambdas/$id"
+    }
+  ]
+}

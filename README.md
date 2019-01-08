@@ -19,13 +19,13 @@ Help unit test and locally serve lambdas written to deploy using Now.
 
 ### For unit tests
 
-In your unit tests, you can use the `lambda` help to simulate a lambda execution environment without needing a running server:
+In your unit tests, you can use the `simulator` helper to simulate a lambda execution environment without needing a running server:
 
 ```js
-import { lambda } from 'now-we-test'
+import { simulator } from 'now-we-test'
 import func from '../your-lambda-implementation'
 
-const app = lambda(func)
+const app = simulator(func)
 
 describe('func', () => {
   it('should do something', async () => {
@@ -36,7 +36,18 @@ describe('func', () => {
 })
 ```
 
-> The result of the invokation of `lambda` helper is a [SuperTest](https://github.com/visionmedia/supertest) instance, so please refer to that documentation for details on possible assertions and usage.
+Signature:
+
+```
+simulator(
+  fn: Function,
+  [builder="@now/node"]: String
+)
+```
+
+Alternatively to the default `@now/node` building evironment, you can also simulate a [`now-micro`](https://github.com/lucasconstantino/now-micro) passing it as second parameter.
+
+> The result of the invokation of `simulator` helper is a [SuperTest](https://github.com/visionmedia/supertest) instance, so please refer to that documentation for details on possible assertions and usage.
 
 ### For locally serving lambdas
 
@@ -66,6 +77,8 @@ OPTIONS
 ```
 
 _See code: [src/commands/serve.js](https://github.com/lucasconstantino/now-we-test/blob/v0.0.0/src/commands/serve.js)_
+
+> Only `@now/node`, `@now/static`, and `now-micro` builders are available so far.
 
 ##### `now-we-test help [COMMAND]`
 

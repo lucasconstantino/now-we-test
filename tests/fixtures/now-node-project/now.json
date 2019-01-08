@@ -16,7 +16,12 @@
   ],
   "routes": [
     {
-      "src": "/(?<id>.*)",
+      "src": "/method-path",
+      "methods": ["GET"],
+      "dest": "/lambda.js"
+    },
+    {
+      "src": "/custom/path/(?<id>.*)",
       "dest": "/lambdas/$id"
     }
   ]

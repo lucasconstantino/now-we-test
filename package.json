@@ -1,7 +1,7 @@
 {
   "name": "now-we-test",
   "description": "Test your Now deployed Node.js lambdas locally",
-  "version": "0.3.0",
+  "version": "0.8.0",
   "author": "Lucas Constantino Silva <lucasconstantinosilva@gmail.com>",
   "bin": {
     "now-we-test": "./bin/run",
@@ -22,16 +22,20 @@
     "minimatch": "^3.0.4",
     "morgan": "^1.9.1",
     "named-regexp-groups": "^1.0.3",
+    "serve-handler": "^5.0.7",
     "supertest": "^3.3.0"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1",
     "@types/jest": "^23.3.10",
     "codecov": "^3.0.2",
+    "console-suppress": "^0.1.1",
     "eslint": "^4.19.1",
     "eslint-config-taller": "^2.0.0",
     "globby": "^8",
+    "husky": "^1.3.1",
     "jest": "^23.1.0",
+    "standard-version": "^4.4.0",
     "ts-jest": "^23.10.5",
     "typescript": "^3.2.2"
   },
@@ -86,8 +90,10 @@
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "oclif-dev manifest && oclif-dev readme",
     "codecov": "yarn test && codecov",
-    "lint": "eslint lib",
+    "lint": "eslint lib tests",
+    "prepush": "npm test && npm run lint",
     "prepublish": "npm test && npm run lint",
-    "test": "jest"
+    "test": "jest",
+    "release": "standard-version"
   }
 }
