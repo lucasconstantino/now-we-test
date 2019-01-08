@@ -1,7 +1,7 @@
 {
   "name": "now-we-test",
   "description": "Test your Now deployed Node.js lambdas locally",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "author": "Lucas Constantino Silva <lucasconstantinosilva@gmail.com>",
   "bin": {
     "now-we-test": "./bin/run"

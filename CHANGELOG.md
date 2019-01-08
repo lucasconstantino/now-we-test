@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+<a name="0.8.0"></a>
+# [0.8.0](https://github.com/lucasconstantino/now-we-test/compare/v0.6.1...v0.8.0) (2019-01-08)
+
+
+### Bug Fixes
+
+* adapted simulator helper to new lambda agnostic builder simulation ([333726c](https://github.com/lucasconstantino/now-we-test/commit/333726c))
+* remove url cleaning from static handler ([7ae5b80](https://github.com/lucasconstantino/now-we-test/commit/7ae5b80))
+
+
+### Features
+
+* added [@now](https://github.com/now)/static support ([97514af](https://github.com/lucasconstantino/now-we-test/commit/97514af))
+* updated simulators to be lambda agnostic ([e324794](https://github.com/lucasconstantino/now-we-test/commit/e324794))
+
+
+
 <a name="0.7.0"></a>
 # [0.7.0](https://github.com/lucasconstantino/now-we-test/compare/v0.6.1...v0.7.0) (2019-01-08)
 
