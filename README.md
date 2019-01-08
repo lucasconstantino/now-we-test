@@ -78,7 +78,7 @@ OPTIONS
 
 _See code: [src/commands/serve.js](https://github.com/lucasconstantino/now-we-test/blob/v0.0.0/src/commands/serve.js)_
 
-> Only `@now/node` and `now-micro` builders are available so far.
+> Only `@now/node`, `@now/static`, and `now-micro` builders are available so far.
 
 ##### `now-we-test help [COMMAND]`
 
