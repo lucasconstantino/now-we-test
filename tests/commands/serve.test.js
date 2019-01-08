@@ -24,7 +24,19 @@ describe('commands', () => {
   describe('serve', () => {
     let app
 
-    afterEach(done => (app ? app.close(done) : done()))
+    afterEach(done => (app && app.listening ? app.close(done) : done()))
+
+    describe('@now/static', () => {
+      const basePath = path.resolve(__dirname, '../fixtures/now-static-project')
+
+      it('should return static file content', async () => {
+        app = await ServeCommand.run([basePath])
+
+        await supertest(app)
+          .get('/README.md')
+          .expect(200, '> This is a sample static file for testing purposes.\n')
+      })
+    })
 
     describe('@now/node', () => {
       const basePath = path.resolve(__dirname, '../fixtures/now-node-project')
@@ -68,13 +80,13 @@ describe('commands', () => {
       })
 
       it('should return 404 when no lambda found on the requested URL', async () => {
-        console.error.suppress(/No lambda matching requested path/)
+        console.error.suppress(/No input matching requested path/)
 
         app = await ServeCommand.run([basePath])
 
         await supertest(app)
           .get('/non/existing/path')
-          .expect(404, 'No lambda matching requested path')
+          .expect(404, 'No input matching requested path')
       })
 
       describe('returning', () => {
@@ -83,7 +95,7 @@ describe('commands', () => {
 
           await expect(
             supertest(app)
-              .get('/custom/path/returning')
+              .get('/custom/path/returning.js')
               .timeout(100)
           ).rejects.toThrow(/Timeout of 100ms exceeded/)
 
@@ -97,7 +109,7 @@ describe('commands', () => {
 
           await expect(
             supertest(app)
-              .get('/custom/path/asyncReturning')
+              .get('/custom/path/asyncReturning.js')
               .timeout(100)
           ).rejects.toThrow(/Timeout of 100ms exceeded/)
 
@@ -110,7 +122,7 @@ describe('commands', () => {
           app = await ServeCommand.run([basePath])
 
           await supertest(app)
-            .get('/custom/path/responding')
+            .get('/custom/path/responding.js')
             .expect(200, 'Hello world!')
 
           expect(lambdas.responding).toHaveBeenCalledTimes(1)
@@ -122,7 +134,7 @@ describe('commands', () => {
           app = await ServeCommand.run([basePath])
 
           await supertest(app)
-            .get('/custom/path/throwing')
+            .get('/custom/path/throwing.js')
             .expect(502, /NO_STATUS_CODE_FROM_LAMBDA/)
 
           expect(lambdas.throwing).toHaveBeenCalledTimes(1)
@@ -133,7 +145,7 @@ describe('commands', () => {
         app = await ServeCommand.run([basePath])
 
         await supertest(app)
-          .get('/lambda')
+          .get('/lambda.js')
           .expect(200, 'Hello world!')
 
         expect(lambdas.unrouted).toHaveBeenCalledTimes(1)
@@ -148,11 +160,11 @@ describe('commands', () => {
 
         expect(lambdas.unrouted).toHaveBeenCalledTimes(1)
 
-        console.error.suppress(/No lambda matching requested path/)
+        console.error.suppress(/No input matching requested path/)
 
         await supertest(app)
           .post('/method-path')
-          .expect(404, 'No lambda matching requested path')
+          .expect(404, 'No input matching requested path')
 
         expect(lambdas.unrouted).toHaveBeenCalledTimes(1)
       })
@@ -180,7 +192,7 @@ describe('commands', () => {
           app = await ServeCommand.run([basePath])
 
           await supertest(app)
-            .get('/custom/path/returning')
+            .get('/custom/path/returning.js')
             .expect(200, 'Hello world!')
 
           expect(lambdas.returning).toHaveBeenCalledTimes(1)
@@ -192,7 +204,7 @@ describe('commands', () => {
           app = await ServeCommand.run([basePath])
 
           await supertest(app)
-            .get('/custom/path/asyncReturning')
+            .get('/custom/path/asyncReturning.js')
             .expect(200, 'Hello world!')
 
           expect(lambdas.asyncReturning).toHaveBeenCalledTimes(1)
@@ -204,7 +216,7 @@ describe('commands', () => {
           app = await ServeCommand.run([basePath])
 
           await supertest(app)
-            .get('/custom/path/responding')
+            .get('/custom/path/responding.js')
             .expect(200, 'Hello world!')
 
           expect(lambdas.responding).toHaveBeenCalledTimes(1)
@@ -218,7 +230,7 @@ describe('commands', () => {
           app = await ServeCommand.run([basePath])
 
           await supertest(app)
-            .get('/custom/path/throwing')
+            .get('/custom/path/throwing.js')
             .expect(500, 'Internal Server Error')
 
           expect(lambdas.throwing).toHaveBeenCalledTimes(1)
@@ -229,7 +241,7 @@ describe('commands', () => {
         app = await ServeCommand.run([basePath])
 
         await supertest(app)
-          .get('/lambda')
+          .get('/lambda.js')
           .expect(200, 'Hello world!')
 
         expect(lambdas.unrouted).toHaveBeenCalledTimes(1)
@@ -244,11 +256,11 @@ describe('commands', () => {
 
         expect(lambdas.unrouted).toHaveBeenCalledTimes(1)
 
-        console.error.suppress(/No lambda matching requested path/)
+        console.error.suppress(/No input matching requested path/)
 
         await supertest(app)
           .post('/method-path')
-          .expect(404, 'No lambda matching requested path')
+          .expect(404, 'No input matching requested path')
 
         expect(lambdas.unrouted).toHaveBeenCalledTimes(1)
       })
