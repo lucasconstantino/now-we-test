@@ -76,7 +76,7 @@ OPTIONS
   -p, --port=port      [default: 3000] port to use
 ```
 
-_See code: [src/commands/serve.js](https://github.com/lucasconstantino/now-we-test/blob/v0.0.0/src/commands/serve.js)_
+_See code: [lib/commands/serve.js](https://github.com/lucasconstantino/now-we-test/blob/v0.0.0/src/commands/serve.js)_
 
 > Only `@now/node`, `@now/static`, and `now-micro` builders are available so far.
 
