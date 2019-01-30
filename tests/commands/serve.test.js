@@ -174,7 +174,9 @@ describe('commands', () => {
 
         await supertest(app)
           .post('/post-path')
-          .expect(200, 'Hello world!')
+          .send({ name: 'John' })
+          .timeout(1000)
+          .expect(200, 'Hello John!')
 
         expect(lambdas.unrouted).toHaveBeenCalledTimes(1)
       })

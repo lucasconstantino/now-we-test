@@ -22,6 +22,7 @@
     "morgan": "^1.9.1",
     "named-regexp-groups": "^1.0.3",
     "serve-handler": "^5.0.7",
+    "stream-to-promise": "^2.2.0",
     "supertest": "^3.3.0"
   },
   "devDependencies": {
