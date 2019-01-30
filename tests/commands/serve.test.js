@@ -168,6 +168,16 @@ describe('commands', () => {
 
         expect(lambdas.unrouted).toHaveBeenCalledTimes(1)
       })
+
+      it('should work with POST requests', async () => {
+        app = await ServeCommand.run([basePath])
+
+        await supertest(app)
+          .post('/post-path')
+          .expect(200, 'Hello world!')
+
+        expect(lambdas.unrouted).toHaveBeenCalledTimes(1)
+      })
     })
 
     describe('now-micro', () => {
