@@ -178,6 +178,18 @@ describe('commands', () => {
 
         expect(lambdas.unrouted).toHaveBeenCalledTimes(1)
       })
+
+      it('should accept any method on routes without method restriction', async () => {
+        app = await ServeCommand.run([basePath])
+
+        await supertest(app).get('/no-method-path').expect(200, 'Hello world!')
+        await supertest(app).post('/no-method-path').expect(200, 'Hello world!')
+        await supertest(app).put('/no-method-path').expect(200, 'Hello world!')
+        await supertest(app).delete('/no-method-path').expect(200, 'Hello world!')
+        await supertest(app).options('/no-method-path').expect(200, 'Hello world!')
+
+        expect(lambdas.unrouted).toHaveBeenCalledTimes(5)
+      })
     })
 
     describe('now-micro', () => {

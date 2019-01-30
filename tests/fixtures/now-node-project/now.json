@@ -12,6 +12,10 @@
   ],
   "routes": [
     {
+      "src": "/no-method-path",
+      "dest": "/lambda.js"
+    },
+    {
       "src": "/method-path",
       "methods": ["GET"],
       "dest": "/lambda.js"
