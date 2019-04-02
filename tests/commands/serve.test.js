@@ -194,6 +194,50 @@ describe('commands', () => {
       })
     })
 
+    describe('@now/node@canary', () => {
+      // Currently the canary implementation is identical to @now/node
+      // No point in duplicating all tests, just basic functionality
+      const basePath = path.resolve(__dirname, '../fixtures/now-node-canary-project')
+
+      const lambdas = {
+        unrouted: require('../fixtures/now-node-canary-project/lambda.js'),
+        returning: require('../fixtures/now-node-canary-project/lambdas/returning'),
+        asyncReturning: require('../fixtures/now-node-canary-project/lambdas/asyncReturning'),
+        responding: require('../fixtures/now-node-canary-project/lambdas/responding'),
+        throwing: require('../fixtures/now-node-canary-project/lambdas/throwing')
+      }
+
+      beforeEach(() => {
+        Object.keys(lambdas).forEach(name => {
+          lambdas[name].mockClear()
+        })
+      })
+
+      describe('general serve tests', () => {
+        it('should have a run method', () => {
+          expect(ServeCommand.run).toBeInstanceOf(Function)
+        })
+
+        it('should throw when no now.json is found', async () => {
+          await expect(ServeCommand.run([])).rejects.toThrow(
+            /No now\.json found/
+          )
+        })
+
+        it('should start serving when working now.json found', async () => {
+          app = await ServeCommand.run([basePath])
+
+          expect(app.listening).toBe(true)
+        })
+
+        it('should listen on specific port when configured', async () => {
+          await expect(isPortAvailable(3001)).resolves.toBe(true)
+          app = await ServeCommand.run([basePath, '--port=3001'])
+          await expect(isPortAvailable(3001)).resolves.toBe(false)
+        })
+      })
+    })
+    
     describe('now-micro', () => {
       const basePath = path.resolve(__dirname, '../fixtures/now-micro-project')
 

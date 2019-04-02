@@ -1,0 +1,33 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "lambdas/*.js",
+      "use": "@now/node@canary"
+    },
+    {
+      "src": "lambda.js",
+      "use": "@now/node@canary"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/no-method-path",
+      "dest": "/lambda.js"
+    },
+    {
+      "src": "/method-path",
+      "methods": ["GET"],
+      "dest": "/lambda.js"
+    },
+    {
+      "src": "/post-path",
+      "methods": ["POST"],
+      "dest": "/lambda.js"
+    },
+    {
+      "src": "/custom/path/(?<id>.*)",
+      "dest": "/lambdas/$id"
+    }
+  ]
+}
