@@ -237,7 +237,7 @@ describe('commands', () => {
         })
       })
     })
-    
+
     describe('now-micro', () => {
       const basePath = path.resolve(__dirname, '../fixtures/now-micro-project')
 
